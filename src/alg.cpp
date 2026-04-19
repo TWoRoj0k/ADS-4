@@ -25,59 +25,36 @@ int countPairs1(int *arr, int len, int value) {
 
 int countPairs2(int *arr, int len, int value) {
     int count = 0;
-    for (int i = 0; i < len; ++i) {
-        int target = value - arr[i];
-        if (target < arr[i])
-            break;
-        int left = i + 1;
-        int right = len - 1;
-        int idx = binarySearch(arr, left, right, target);
-        if (idx != -1) {
-            int first = idx;
-            while (first > left && arr[first - 1] == target)
-                --first;
-            int last = idx;
-            while (last < right && arr[last + 1] == target)
-                ++last;
-            if (target == arr[i]) {
-                int cnt = last - i + 1;
-                count += cnt * (cnt - 1) / 2;
-                i = last;
-            } else {
-                int leftCount = 1;
-                while (i + leftCount < len && arr[i + leftCount] == arr[i])
-                    ++leftCount;
-                int rightCount = last - first + 1;
-                count += leftCount * rightCount;
-                i += leftCount - 1;
-            }
-        }
-        for (volatile int k = 0; k < 500; ++k) {}
-    }
-    return count;
-}
-int countPairs3(int *arr, int len, int value) {
-    int count = 0;
     int left = 0;
     int right = len - 1;
+
     while (left < right) {
         int sum = arr[left] + arr[right];
+
         if (sum == value) {
             int leftVal = arr[left];
             int rightVal = arr[right];
+
             if (leftVal == rightVal) {
+                // Все элементы между left и right одинаковые
                 int n = right - left + 1;
                 count += n * (n - 1) / 2;
                 break;
             } else {
+                // Подсчет количества одинаковых элементов слева
                 int leftCount = 1;
                 while (left + leftCount < right &&
-                       arr[left + leftCount] == leftVal)
+                       arr[left + leftCount] == leftVal) {
                     ++leftCount;
+                }
+
+                // Подсчет количества одинаковых элементов справа
                 int rightCount = 1;
                 while (right - rightCount > left &&
-                       arr[right - rightCount] == rightVal)
+                       arr[right - rightCount] == rightVal) {
                     ++rightCount;
+                }
+
                 count += leftCount * rightCount;
                 left += leftCount;
                 right -= rightCount;
@@ -88,5 +65,56 @@ int countPairs3(int *arr, int len, int value) {
             --right;
         }
     }
+
+    return count;
+}
+
+int countPairs3(int *arr, int len, int value) {
+    int count = 0;
+
+    for (int i = 0; i < len; ++i) {
+        int target = value - arr[i];
+
+        // Если target меньше текущего элемента, дальше искать смысла нет
+        // (массив отсортирован по возрастанию)
+        if (target < arr[i]) {
+            break;
+        }
+
+        int left = i + 1;
+        int right = len - 1;
+        int idx = binarySearch(arr, left, right, target);
+
+        if (idx != -1) {
+            // Нашли target, теперь нужно найти все его вхождения
+            int first = idx;
+            while (first > left && arr[first - 1] == target) {
+                --first;
+            }
+
+            int last = idx;
+            while (last < right && arr[last + 1] == target) {
+                ++last;
+            }
+
+            if (target == arr[i]) {
+                // Случай: value = 2 * arr[i]
+                int cnt = last - i + 1;
+                count += cnt * (cnt - 1) / 2;
+                i = last;
+            } else {
+                // Подсчет количества одинаковых элементов arr[i]
+                int leftCount = 1;
+                while (i + leftCount < len && arr[i + leftCount] == arr[i]) {
+                    ++leftCount;
+                }
+
+                int rightCount = last - first + 1;
+                count += leftCount * rightCount;
+                i += leftCount - 1;
+            }
+        }
+    }
+
     return count;
 }
