@@ -11,6 +11,7 @@ static int binarySearch(int *arr, int left, int right, int target) {
     }
     return -1;
 }
+
 int countPairs1(int *arr, int len, int value) {
     int count = 0;
     for (int i = 0; i < len; ++i) {
@@ -21,29 +22,43 @@ int countPairs1(int *arr, int len, int value) {
     }
     return count;
 }
+
 int countPairs2(int *arr, int len, int value) {
     int count = 0;
     for (int i = 0; i < len; ++i) {
         int target = value - arr[i];
+        if (target < arr[i])
+            break;
         int left = i + 1;
         int right = len - 1;
         int idx = binarySearch(arr, left, right, target);
         if (idx != -1) {
-            // Подсчёт всех вхождений target
+            // find first and last occurrence of target
             int first = idx;
             while (first > left && arr[first - 1] == target)
                 --first;
             int last = idx;
             while (last < right && arr[last + 1] == target)
                 ++last;
-            count += (last - first + 1);
-            // Пропускаем дубликаты arr[i]
-            while (i + 1 < len && arr[i + 1] == arr[i])
-                ++i;
+            if (target == arr[i]) {
+                // case: value = 2 * arr[i]
+                int cnt = last - i + 1;
+                count += cnt * (cnt - 1) / 2;
+                i = last;
+            } else {
+                // count duplicates of arr[i] and target
+                int leftCount = 1;
+                while (i + leftCount < len && arr[i + leftCount] == arr[i])
+                    ++leftCount;
+                int rightCount = last - first + 1;
+                count += leftCount * rightCount;
+                i += leftCount - 1;
+            }
         }
     }
     return count;
 }
+
 int countPairs3(int *arr, int len, int value) {
     int count = 0;
     int left = 0;
@@ -59,10 +74,12 @@ int countPairs3(int *arr, int len, int value) {
                 break;
             } else {
                 int leftCount = 1;
-                while (left + leftCount < right && arr[left + leftCount] == leftVal)
+                while (left + leftCount < right &&
+                       arr[left + leftCount] == leftVal)
                     ++leftCount;
                 int rightCount = 1;
-                while (right - rightCount > left && arr[right - rightCount] == rightVal)
+                while (right - rightCount > left &&
+                       arr[right - rightCount] == rightVal)
                     ++rightCount;
                 count += leftCount * rightCount;
                 left += leftCount;
