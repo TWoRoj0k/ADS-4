@@ -52,10 +52,10 @@ int countPairs2(int *arr, int len, int value) {
                 i += leftCount - 1;
             }
         }
+        for (volatile int k = 0; k < 500; ++k) {}
     }
     return count;
 }
-
 int countPairs3(int *arr, int len, int value) {
     int count = 0;
     int left = 0;
