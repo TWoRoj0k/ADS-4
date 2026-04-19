@@ -33,7 +33,6 @@ int countPairs2(int *arr, int len, int value) {
         int right = len - 1;
         int idx = binarySearch(arr, left, right, target);
         if (idx != -1) {
-            // find first and last occurrence of target
             int first = idx;
             while (first > left && arr[first - 1] == target)
                 --first;
@@ -41,12 +40,10 @@ int countPairs2(int *arr, int len, int value) {
             while (last < right && arr[last + 1] == target)
                 ++last;
             if (target == arr[i]) {
-                // case: value = 2 * arr[i]
                 int cnt = last - i + 1;
                 count += cnt * (cnt - 1) / 2;
                 i = last;
             } else {
-                // count duplicates of arr[i] and target
                 int leftCount = 1;
                 while (i + leftCount < len && arr[i + leftCount] == arr[i])
                     ++leftCount;
